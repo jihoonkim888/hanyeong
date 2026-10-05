@@ -32,7 +32,25 @@ Caps Lock을 F18/F19로 바꾸는 널리 알려진 방법은 1번만 해결합�
 
 ## 설치
 
-macOS 14 이상이 필요합니다. 아직 배포용 빌드가 없어 소스에서 직접 빌드합니다. Xcode 없이 Command Line Tools만 있어도 됩니다.
+macOS 14 이상이 필요합니다. Apple Silicon과 Intel Mac을 모두 지원합니다.
+
+1. [Hanyeong.zip](https://github.com/jihoonkim888/hanyeong/releases/latest/download/Hanyeong.zip)을 내려받아 압축을 풉니다.
+2. `Hanyeong.app`을 응용 프로그램 폴더로 옮깁니다.
+3. 앱을 엽니다. 처음에는 macOS가 확인되지 않은 앱이라며 열지 않습니다. 경고 창을 닫고, 시스템 설정 > 개인정보 보호 및 보안에서 아래쪽의 **그래도 열기**를 누릅니다.
+
+3번의 경고는 한영이 Apple의 공증을 받지 않아서 나옵니다. 공증에는 유료 개발자 계정이 필요해 아직 받지 못했습니다. 터미널이 익숙하다면 3번 대신 다음 명령으로 차단을 풀 수 있습니다.
+
+```bash
+xattr -dr com.apple.quarantine /Applications/Hanyeong.app
+```
+
+### 업데이트할 때
+
+새 버전을 같은 방법으로 설치한 뒤 손쉬운 사용 권한을 다시 허용해야 합니다. 시스템 설정 > 개인정보 보호 및 보안 > 손쉬운 사용 목록에서 한영을 골라 `−`로 지우고, 한영 설정 창에서 "권한 허용…"을 다시 누릅니다. 공증받지 않은 앱은 버전이 바뀌면 macOS가 다른 앱으로 보기 때문입니다.
+
+### 소스에서 빌드
+
+Xcode 없이 Command Line Tools만 있어도 됩니다. 직접 빌드한 앱은 3번의 경고 없이 열립니다.
 
 ```bash
 git clone https://github.com/jihoonkim888/hanyeong.git
@@ -74,7 +92,7 @@ SIGN_IDENTITY="내 인증서 이름" ./scripts/build-app.sh
 
 ### 어떤 Mac과 macOS에서 쓸 수 있나요?
 
-macOS 14(Sonoma) 이상에서 동작하도록 만들었습니다. 개발과 확인은 macOS 26(Tahoe)의 맥북 내장 키보드에서 했습니다. 외장 키보드는 키보드별 설정까지 지원하지만 아직 여러 기종에서 확인하지는 못했습니다. 문제가 있으면 [이슈](https://github.com/jihoonkim888/hanyeong/issues)로 알려 주세요.
+macOS 14(Sonoma) 이상에서 동작하도록 만들었습니다. 개발과 확인은 macOS 26(Tahoe)의 Apple Silicon 맥북 내장 키보드에서 했습니다. Intel Mac에서는 실행되는지만 확인했고, 외장 키보드는 키보드별 설정까지 지원하지만 아직 여러 기종에서 확인하지는 못했습니다. 문제가 있으면 [이슈](https://github.com/jihoonkim888/hanyeong/issues)로 알려 주세요.
 
 ## 개인정보와 권한
 
@@ -108,6 +126,7 @@ macOS 14(Sonoma) 이상에서 동작하도록 만들었습니다. 개발과 확�
 ```bash
 ./scripts/test.sh                                   # 단위 테스트
 ./scripts/build-app.sh                              # dist/Hanyeong.app 빌드
+./scripts/release.sh                                # 배포용 dist/release/Hanyeong.zip (Apple Silicon + Intel)
 dist/Hanyeong.app/Contents/MacOS/Hanyeong --preview general   # 샘플 데이터로 설정 창만 보기
 swift scripts/make-icon.swift                       # 아이콘 다시 만들기
 ```

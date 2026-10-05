@@ -5,20 +5,29 @@
 #                  With ad-hoc signing, macOS asks for the Accessibility permission again
 #                  after every rebuild; a real identity keeps the permission.
 #   BUILD_DIR      Where SwiftPM keeps intermediate files. Defaults to .build.
+#   ARCHS          Architectures to build, such as "arm64 x86_64". Defaults to this Mac's.
+#   OUT_DIR        Where the app goes. Defaults to dist.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 build_dir="${BUILD_DIR:-.build}"
 identity="${SIGN_IDENTITY:--}"
-app="dist/Hanyeong.app"
+archs="${ARCHS:-$(uname -m)}"
+app="${OUT_DIR:-dist}/Hanyeong.app"
 
-swift build -c release --scratch-path "$build_dir"
+binaries=()
+for arch in $archs; do
+    swift build -c release --arch "$arch" --scratch-path "$build_dir"
+    binaries+=("$build_dir/$arch-apple-macosx/release/Hanyeong")
+done
 
 rm -rf "$app"
 mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources"
-cp "$build_dir/release/Hanyeong" "$app/Contents/MacOS/Hanyeong"
+lipo -create "${binaries[@]}" -output "$app/Contents/MacOS/Hanyeong"
+# The debug symbols name the directories the app was built in. Keep them out of the app.
+strip -S "$app/Contents/MacOS/Hanyeong"
 cp Resources/Info.plist "$app/Contents/Info.plist"
 cp Resources/AppIcon.icns "$app/Contents/Resources/AppIcon.icns"
 
 codesign --force --sign "$identity" "$app"
-echo "Built $app (signed with: $identity)"
+echo "Built $app for $archs (signed with: $identity)"

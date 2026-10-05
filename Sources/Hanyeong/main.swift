@@ -1,5 +1,10 @@
 import AppKit
 
+if CommandLine.arguments.contains("--version") {
+    print("한영 \(AppInfo.version)")
+    exit(0)
+}
+
 // The same executable also runs as the watchdog child, which must stay free of AppKit.
 if CommandLine.arguments.contains(Watchdog.argument) {
     Watchdog.run()
